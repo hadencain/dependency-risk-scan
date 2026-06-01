@@ -32,3 +32,9 @@ def test_fetch_requirements_not_found():
     with patch("deprisk.github.requests.get", return_value=mock_response):
         result = fetch_requirements("https://github.com/owner/repo")
     assert result is None
+
+
+def test_normalize_invalid_url_raises():
+    import pytest
+    with pytest.raises(ValueError, match="Invalid GitHub URL"):
+        normalize_github_url("https://gitlab.com/owner/repo")
