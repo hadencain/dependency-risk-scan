@@ -10,3 +10,4 @@ venv/
 .mypy_cache/
 scratch/
 _scratch-*
+.claude/
