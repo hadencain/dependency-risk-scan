@@ -2,6 +2,8 @@ import requests
 
 
 def normalize_github_url(url: str, path: str = "requirements.txt") -> str:
+    if not url.startswith("https://github.com/"):
+        raise ValueError(f"Invalid GitHub URL: {url}")
     url = url.rstrip("/")
     parts = url.replace("https://github.com/", "")
     return f"https://raw.githubusercontent.com/{parts}/HEAD/{path}"
