@@ -32,8 +32,11 @@ def main(argv: list[str] | None = None) -> None:
         return
     else:
         try:
-            with open(args.source) as f:
-                content = f.read()
+            raw = open(args.source, "rb").read()
+            if raw.startswith(b"\xff\xfe") or raw.startswith(b"\xfe\xff"):
+                content = raw.decode("utf-16")
+            else:
+                content = raw.decode("utf-8-sig")
         except FileNotFoundError:
             print(f"Error: file not found: {args.source}", file=sys.stderr)
             sys.exit(1)
