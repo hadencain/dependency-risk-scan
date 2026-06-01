@@ -12,14 +12,20 @@ def fetch_pypi_data(name: str, pinned: str | None) -> PackageInfo:
     except Exception:
         return PackageInfo(name=name, pinned=pinned, unavailable=True)
 
-    latest = data["info"]["version"]
+    try:
+        latest = data["info"]["version"]
+    except (KeyError, TypeError):
+        return PackageInfo(name=name, pinned=pinned, unavailable=True)
 
     latest_date = None
-    for release_files in data["releases"].values():
-        for f in release_files:
-            dt = datetime.fromisoformat(f["upload_time"]).date()
-            if latest_date is None or dt > latest_date:
-                latest_date = dt
+    try:
+        for release_files in data["releases"].values():
+            for f in release_files:
+                dt = datetime.fromisoformat(f["upload_time"]).date()
+                if latest_date is None or dt > latest_date:
+                    latest_date = dt
+    except (KeyError, ValueError):
+        latest_date = None
 
     downloads = None
     try:
