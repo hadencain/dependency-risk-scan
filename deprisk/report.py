@@ -16,10 +16,10 @@ def _is_outdated(pkg: PackageInfo) -> bool:
     except InvalidVersion:
         return False
 
-def _is_abandoned(pkg: PackageInfo) -> bool:
-    if pkg.unavailable or pkg.last_release_date is None or pkg.downloads_last_month is None:
+def _is_abandoned(pkg: PackageInfo, today: date | None = None) -> bool:
+    if pkg.unavailable or pkg.pinned is None or pkg.last_release_date is None or pkg.downloads_last_month is None:
         return False
-    cutoff = date.today() - timedelta(days=_ABANDONED_DAYS)
+    cutoff = (today or date.today()) - timedelta(days=_ABANDONED_DAYS)
     return pkg.last_release_date < cutoff and pkg.downloads_last_month < _ABANDONED_DOWNLOADS
 
 def render(
@@ -62,7 +62,7 @@ def render(
         t = Table(box=box.SIMPLE_HEAD, show_edge=False, pad_edge=True)
         t.add_column("Package")
         t.add_column("CVE")
-        t.add_column("Summary")
+        t.add_column("Summary", max_width=60)
         for v in vulns:
             t.add_row(v.package, v.cve_id, v.summary)
         console.print(t)
