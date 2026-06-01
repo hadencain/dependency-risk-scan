@@ -22,12 +22,11 @@ def fetch_vulnerabilities(packages: list[tuple[str, str | None]]) -> list[Vulner
         return []
 
     vulns = []
-    for i, result in enumerate(results):
-        pkg_name = packages[i][0]
+    for (pkg_name, _), result in zip(packages, results):
         for v in result.get("vulns", []):
             cve_id = next(
                 (a for a in v.get("aliases", []) if a.startswith("CVE-")),
-                v["id"],
+                v.get("id", "UNKNOWN"),
             )
             vulns.append(Vulnerability(
                 package=pkg_name,
