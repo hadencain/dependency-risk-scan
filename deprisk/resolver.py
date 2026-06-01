@@ -15,7 +15,8 @@ def parse_requirements(content: str) -> list[tuple[str, str | None]]:
     for line in content.splitlines():
         line = line.strip()
         # Skip comments, blank lines, and option lines
-        if not line or line.startswith("#") or line.startswith("-"):
+        line = line.split("#")[0].strip()
+        if not line or line.startswith("-"):
             continue
         try:
             req = Requirement(line)
