@@ -11,3 +11,6 @@ venv/
 scratch/
 _scratch-*
 .claude/
+CLAUDE.md
+.superpowers/
+docs/superpowers/
