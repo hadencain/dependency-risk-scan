@@ -17,6 +17,12 @@ def main(argv: list[str] | None = None) -> None:
         default="requirements.txt",
         help="Path within the repo to requirements.txt (GitHub URLs only)",
     )
+    parser.add_argument(
+        "--graph",
+        metavar="FILE",
+        default=None,
+        help="Write D3 dependency graph HTML to FILE",
+    )
     args = parser.parse_args(argv)
     source_label = args.source
 
@@ -46,6 +52,14 @@ def main(argv: list[str] | None = None) -> None:
     packages = [fetch_pypi_data(name, version) for name, version in packages_raw]
     vulns = fetch_vulnerabilities(packages_raw)
     render(source_label, packages, vulns)
+
+    if args.graph:
+        from deprisk.graph import build
+        from deprisk.html import export as export_html
+        graph_data = build(packages_raw, packages, vulns)
+        with open(args.graph, "w", encoding="utf-8") as f:
+            f.write(export_html(graph_data, source_label))
+        print(f"Dependency graph written to {args.graph}")
 
 if __name__ == "__main__":
     main()

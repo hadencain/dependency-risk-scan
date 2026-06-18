@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
@@ -10,6 +10,7 @@ class PackageInfo:
     last_release_date: date | None = None
     downloads_last_month: int | None = None
     unavailable: bool = False
+    requires_dist: list[str] = field(default_factory=list)
 
 
 @dataclass

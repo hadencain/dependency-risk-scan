@@ -37,10 +37,13 @@ def fetch_pypi_data(name: str, pinned: str | None) -> PackageInfo:
     except Exception:
         pass
 
+    requires_dist = data.get("info", {}).get("requires_dist") or []
+
     return PackageInfo(
         name=name,
         pinned=pinned,
         latest=latest,
         last_release_date=latest_date,
         downloads_last_month=downloads,
+        requires_dist=requires_dist,
     )
