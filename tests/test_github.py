@@ -1,5 +1,5 @@
 from unittest.mock import patch, Mock
-from deprisk.github import normalize_github_url, fetch_requirements
+from deprisk.github import normalize_github_url, fetch_requirements, fetch_file
 
 
 def test_normalize_default_path():
@@ -38,3 +38,16 @@ def test_normalize_invalid_url_raises():
     import pytest
     with pytest.raises(ValueError, match="Invalid GitHub URL"):
         normalize_github_url("https://gitlab.com/owner/repo")
+
+
+def test_fetch_file_returns_text():
+    resp = Mock(status_code=200, text="contents")
+    resp.raise_for_status = Mock()
+    with patch("deprisk.github.requests.get", return_value=resp):
+        assert fetch_file("https://github.com/owner/repo", "bom.json") == "contents"
+
+
+def test_fetch_file_404_returns_none():
+    resp = Mock(status_code=404)
+    with patch("deprisk.github.requests.get", return_value=resp):
+        assert fetch_file("https://github.com/owner/repo", "bom.json") is None

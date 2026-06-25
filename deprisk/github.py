@@ -9,10 +9,14 @@ def normalize_github_url(url: str, path: str = "requirements.txt") -> str:
     return f"https://raw.githubusercontent.com/{parts}/HEAD/{path}"
 
 
-def fetch_requirements(url: str, path: str = "requirements.txt") -> str | None:
+def fetch_file(url: str, path: str) -> str | None:
     raw_url = normalize_github_url(url, path)
     response = requests.get(raw_url, timeout=10)
     if response.status_code == 404:
         return None
     response.raise_for_status()
     return response.text
+
+
+def fetch_requirements(url: str, path: str = "requirements.txt") -> str | None:
+    return fetch_file(url, path)
