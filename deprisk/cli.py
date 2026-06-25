@@ -141,14 +141,29 @@ def main(argv: list[str] | None = None) -> None:
         run_daemon_command(args, tool)  # defined in Task 11
 
 
-# --- Task 11 stubs (replaced when daemon is implemented) ---
-
 def _add_daemon_parser(sub):
-    pass
+    p = sub.add_parser("daemon", help="Run drift comparison on a schedule")
+    p.add_argument("canonical")
+    p.add_argument("--path", default=None)
+    p.add_argument("--env-file", default=None)
+    p.add_argument("--output", metavar="DIR", default=None)
+    p.add_argument("--fail-on", default="high",
+                   choices=["none", "low", "medium", "high"])
+    p.add_argument("--interval", type=float, default=3600.0,
+                   help="Seconds between comparisons (default 3600)")
+    p.add_argument("--iterations", type=int, default=None,
+                   help="Stop after N iterations (default: run until interrupted)")
 
 
 def run_daemon_command(args, tool):
-    raise NotImplementedError
+    from deprisk.daemon import run_loop
+
+    def tick() -> int:
+        return run_drift(args.canonical, args.path, args.env_file,
+                         args.output, args.fail_on, tool)
+
+    code = run_loop(tick, interval=args.interval, iterations=args.iterations)
+    sys.exit(code)
 
 
 if __name__ == "__main__":
