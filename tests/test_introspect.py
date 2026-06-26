@@ -1,4 +1,3 @@
-from types import SimpleNamespace
 from unittest.mock import patch
 from deprisk.env.introspect import introspect_environment, env_descriptor
 

@@ -1,5 +1,4 @@
 # tests/test_daemon.py
-import pytest
 from deprisk.daemon import run_loop
 
 
