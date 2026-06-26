@@ -24,11 +24,14 @@ def test_parse_freeze_extracts_pinned():
     assert comps["requests"].source == "freeze-file"
 
 
-def test_parse_freeze_skips_editable_and_options():
-    names = {c.name for c in parse_freeze(FREEZE)}
-    assert "x" not in names
-    assert "other.txt" not in names
-    assert "weird" not in names
+def test_parse_freeze_skips_editable_and_options_but_keeps_direct_refs():
+    comps = {c.name: c for c in parse_freeze(FREEZE)}
+    names = set(comps.keys())
+    assert "x" not in names        # editable (-e) still skipped
+    assert "other.txt" not in names # option line (-r) still skipped
+    # direct-reference installs (name @ url) must now be kept
+    assert "weird" in names
+    assert comps["weird"].version is None
 
 
 def test_load_env_file_freeze(tmp_path):

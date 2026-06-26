@@ -18,7 +18,7 @@ def generate_from_requirements(content: str, tool: str = "deprisk") -> SBOMDocum
             purl=purl, source="manifest",
         ))
     return SBOMDocument(
-        format="generated", spec_version="", components=components, tool=tool,
+        format="generated-from-manifests", spec_version="", components=components, tool=tool,
     )
 
 

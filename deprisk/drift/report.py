@@ -26,7 +26,7 @@ def report_to_dict(report: DriftReport) -> dict:
         "canonical_format": report.canonical_format,
         "env_source": report.env_source,
         "subject_commit": report.subject_commit,
-        "summary": report.summary,
+        "summary": dict(report.summary),
         "records": [
             {
                 "drift_type": r.drift_type.value,

@@ -79,6 +79,8 @@ def compare(
             ))
             summary[DriftType.MISSING.value] += 1
 
+    records.sort(key=lambda r: (r.drift_type.value, r.component.ecosystem.lower(), canonicalize_name(r.component.name)))
+
     canonical_format = (
         f"{canonical.format}-{canonical.spec_version}"
         if canonical.spec_version else canonical.format

@@ -12,7 +12,7 @@ def test_generate_parses_pinned_and_unpinned():
     assert by_name["requests"].purl == "pkg:pypi/requests@2.31.0"
     assert by_name["flask"].version is None
     assert by_name["flask"].purl == "pkg:pypi/flask"
-    assert doc.format == "generated"
+    assert doc.format == "generated-from-manifests"
 
 
 def test_to_cyclonedx_is_valid_cyclonedx():

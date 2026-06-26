@@ -1,4 +1,5 @@
 from packaging.requirements import InvalidRequirement, Requirement
+from packaging.utils import canonicalize_name
 
 from deprisk.models import Component
 from deprisk.sbom.ingest import ingest_cyclonedx
@@ -9,7 +10,7 @@ def parse_freeze(text: str) -> list[Component]:
     components = []
     for line in text.splitlines():
         line = line.split("#")[0].strip()
-        if not line or line.startswith("-") or "@" in line:
+        if not line or line.startswith("-"):
             continue
         try:
             req = Requirement(line)
@@ -22,7 +23,7 @@ def parse_freeze(text: str) -> list[Component]:
                 break
         components.append(Component(
             ecosystem="pypi", name=req.name, version=version,
-            purl=f"pkg:pypi/{req.name.lower()}@{version}" if version else None,
+            purl=f"pkg:pypi/{canonicalize_name(req.name)}@{version}" if version else None,
             source="freeze-file",
         ))
     return components

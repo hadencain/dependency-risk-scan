@@ -1,5 +1,6 @@
 import argparse
 import importlib.metadata
+import os
 import sys
 
 from deprisk.github import fetch_requirements
@@ -71,12 +72,17 @@ def run_drift(
     output: str | None,
     fail_on: str,
     tool: str,
+    commit: str | None = None,
 ) -> int:
+    commit = commit or os.environ.get("GITHUB_SHA")
     try:
         canon_doc = discover_canonical(canonical, path=path)
     except (FileNotFoundError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
+
+    if commit:
+        canon_doc.subject_commit = commit
 
     if env_file:
         installed = load_env_file(env_file)
@@ -125,6 +131,8 @@ def main(argv: list[str] | None = None) -> None:
     p_drift.add_argument("--fail-on", default="high",
                          choices=["none", "low", "medium", "high"],
                          help="Minimum severity that causes a non-zero exit")
+    p_drift.add_argument("--commit", default=None,
+                         help="Commit SHA to record as canonical provenance; falls back to $GITHUB_SHA")
 
     _add_daemon_parser(sub)  # defined in Task 11
 
@@ -135,7 +143,7 @@ def main(argv: list[str] | None = None) -> None:
         run_scan(args.source, args.path, args.graph)
     elif args.command == "drift":
         code = run_drift(args.canonical, args.path, args.env_file,
-                         args.output, args.fail_on, tool)
+                         args.output, args.fail_on, tool, commit=args.commit)
         sys.exit(code)
     elif args.command == "daemon":
         run_daemon_command(args, tool)  # defined in Task 11
@@ -153,6 +161,8 @@ def _add_daemon_parser(sub):
                    help="Seconds between comparisons (default 3600)")
     p.add_argument("--iterations", type=int, default=None,
                    help="Stop after N iterations (default: run until interrupted)")
+    p.add_argument("--commit", default=None,
+                   help="Commit SHA to record as canonical provenance; falls back to $GITHUB_SHA")
 
 
 def run_daemon_command(args, tool):
@@ -160,7 +170,7 @@ def run_daemon_command(args, tool):
 
     def tick() -> int:
         return run_drift(args.canonical, args.path, args.env_file,
-                         args.output, args.fail_on, tool)
+                         args.output, args.fail_on, tool, commit=args.commit)
 
     code = run_loop(tick, interval=args.interval, iterations=args.iterations)
     sys.exit(code)

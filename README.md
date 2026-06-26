@@ -91,6 +91,8 @@ deprisk drift ./bom.json --env-file prod-freeze.txt --output ./drift-reports
 deprisk daemon https://github.com/owner/repo --interval 3600 --output ./drift-reports
 ```
 
+Both `deprisk drift` and `deprisk daemon` accept `--commit <sha>` (falling back to `$GITHUB_SHA`) to record canonical provenance in the report's `subject_commit` field.
+
 Drift reports are timestamped JSON written to `--output`, carrying audit metadata
 (generated_at, tool version, canonical source + commit, env source, drift counts)
 suitable as ISO 27001 / SOC2 evidence.

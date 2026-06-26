@@ -80,3 +80,20 @@ def test_both_empty_no_records():
     assert report.records == []
     assert report.canonical_format == "cyclonedx-1.5"
     assert report.generated_at == NOW
+
+
+def test_records_are_deterministically_sorted():
+    """Records must be sorted by (drift_type, ecosystem, canonicalized name)."""
+    canonical = _canon(Component("pypi", "requests", "2.31.0"))
+    installed = [
+        Component("pypi", "requests", "2.28.0"),   # VERSION_MISMATCH
+        Component("pypi", "zeta", "1.0"),           # UNDECLARED
+        Component("pypi", "alpha", "2.0"),          # UNDECLARED
+    ]
+    report = _run(canonical, installed)
+    types_and_names = [(r.drift_type.value, r.component.name) for r in report.records]
+    assert types_and_names == [
+        ("UNDECLARED", "alpha"),
+        ("UNDECLARED", "zeta"),
+        ("VERSION_MISMATCH", "requests"),
+    ]
