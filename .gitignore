@@ -14,3 +14,6 @@ _scratch-*
 CLAUDE.md
 .superpowers/
 docs/superpowers/
+session_log.md
+tests/test_good.txt
+tests/test_errors.txt
